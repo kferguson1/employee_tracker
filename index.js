@@ -1,6 +1,9 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const conTable = require('console.table');
+const promiseMySql = require('mysql-promise')
+let dept = [];
+let role = [];
 
 // important connection criteria | Password temporarily set to
 // 'password' for this assignment
@@ -33,9 +36,8 @@ const initialPrompt = () => {
                 name: 'input',
                 choices: [
                     'View All Employees',
-                    'View Employees by Manager',
-                    'View All Roles',
-                    'View All Departments',
+                    'View Employees by Role',
+                    'View Employees by Department',
                     'Add New Employee',
                     'Add New Role',
                     'Add New Department',
@@ -44,6 +46,7 @@ const initialPrompt = () => {
                     'Delete Employee',
                     'Delete Role',
                     'Delete Department',
+                    'View Employees by Manager',
                     'Exit',
                 ],
                 message: 'What would you like to do?'
@@ -56,17 +59,16 @@ const initialPrompt = () => {
                 case 'View All Employees':
                     viewAllEmployees();
                     break;
-                
-                case 'View Employees by Manager':
-                    viewEmployeeByManager();
-                    break;
 
-                case 'View All Roles':
-                    viewAllroles();
+                case 'View Employees by Role':
+                    viewByRole();
+                    setTimeout(() => {
+                        employeeRole();
+                    }, 300);
                     break;
                     
-                case 'View All Departments':
-                    viewAllDepartments();
+                case 'View Employees by Department':
+                    viewByDept();
                     break;
 
                 case 'Add New Employee':
@@ -74,7 +76,7 @@ const initialPrompt = () => {
                         break;
                         
                 case 'Add New Role':
-                        addrole();
+                        addRole();
                         break;
 
                 case 'Add New Department':
@@ -82,7 +84,7 @@ const initialPrompt = () => {
                     break;
                         
                 case 'Update Employee Role':
-                    updaterole();
+                    updateRole();
                     break;
 
                 case 'Update Employee Manager':
@@ -99,6 +101,10 @@ const initialPrompt = () => {
                                 
                 case 'Delete Department':
                     deleteDepartment();
+                    break;
+
+                case 'View Employees by Manager':
+                    viewEmployeeByManager();
                     break;
 
                 case 'Exit':
@@ -131,6 +137,80 @@ const viewAllEmployees = () => {
     });
 };
 
+const viewByRole = () => {
+   role = [];
+   connection.query("SELECT roles.title FROM roles", (err, res) => {
+       if (err) throw err;
+       for (let i = 0; i < res.length; i++) {
+           role.push(res[i].title);
+       };
+    });
+};
 
+const viewByDept = () => {
+    dept = [];
+    connection.query("SELECT department.names FROM department", (err, res) => {
+        if (err) throw err;
+        for (let i = 0; i < res.length; i++) {
+            dept.push(res[i].name);
+        }
+    });
+};
 
-
+const addEmployee = () => {
+    roleChoices();
+    inquirer
+        .prompt([
+      {
+        name: "first",
+        type: "input",
+        message: "What is the employee's first name?",
+      },
+      {
+        name: "last",
+        type: "input",
+        message: "What is the employee's last name?",
+      },
+      {
+        name: "position",
+        type: "list",
+        message: "What is the employee's position?",
+        choices: role,
+      },
+      {
+        name: "managerConfirm",
+        type: "confirm",
+        message: "Does the employee have a manager?",
+      },
+      {
+        name: "manager",
+        type: "input",
+        message: "Whate is the manager's id?",
+        when: (answers) => answers.manager1 === true,
+      },
+    ])
+    .then(({ first, last, position, manager }) => {
+        let newPositionId;
+        for (let i = 0; i < role.length; i++) {
+          if (role[i] === position) {
+            newPositionId = i + 1;
+          }
+        }
+        console.log("Adding new Employee...\n");
+        connection.query(
+          "INSERT INTO employee SET ?",
+          {
+            first_name: first,
+            last_name: last,
+            role_id: newPositionId,
+            manager_id: manager,
+          },
+          (err, res) => {
+            if (err) throw err;
+            console.log(`${res.affectedRows} Employee Added!\n`);
+  
+            initialPrompt();
+          }
+        );
+      });
+}
