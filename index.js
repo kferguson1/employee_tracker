@@ -37,9 +37,7 @@ const initialPrompt = () => {
                 type: 'list',
                 name: 'input',
                 choices: [
-                    'View All Employees',
-                    'View Employees by Role',
-                    'View Employees by Department',
+                    'View All Employees, Roles and Departments',
                     'Add New Employee',
                     'Add New Role',
                     'Add New Department',
@@ -56,16 +54,8 @@ const initialPrompt = () => {
             const { input } = answer;
 
             switch (input) {
-                case 'View All Employees':
+                case 'View All Employees, Roles and Departments':
                     viewAllEmployees();
-                    break;
-
-                case 'View Employees by Role':
-                    viewByRole();
-                    break;
-                    
-                case 'View Employees by Department':
-                    viewByDept();
                     break;
 
                 case 'Add New Employee':
@@ -123,28 +113,6 @@ const viewAllEmployees = () => {
         const table = conTable.getTable(res);
         console.log(table);
         initialPrompt();
-    });
-};
-
-const viewByRole = () => {
- pos = [];
-    console.log("View Employees by Role...\n");
-   connection.query("SELECT roles.title FROM roles", (err, res) => {
-       if (err) throw err;
-       for (let i = 0; i < pos.length; i++) {
-           pos.push(res[i].title);
-       }
-   })
-};
-
-const viewByDept = () => {
- depts = [];
-    console.log("View Employees by Department...\n");
-    connection.query("SELECT department.names FROM department", (err, res) => {
-        if (err) throw err;
-        for (let i = 0; i < depts.length; i++) {
-            depts.push(res[i].name);
-        }
     });
 };
 
