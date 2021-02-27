@@ -62,7 +62,7 @@ const initialPrompt = () => {
                     break;
 
                 case 'View All Roles':
-                    viewAllRoles();
+                    viewAllroles();
                     break;
                     
                 case 'View All Departments':
@@ -74,7 +74,7 @@ const initialPrompt = () => {
                         break;
                         
                 case 'Add New Role':
-                        addRole();
+                        addrole();
                         break;
 
                 case 'Add New Department':
@@ -82,7 +82,7 @@ const initialPrompt = () => {
                     break;
                         
                 case 'Update Employee Role':
-                    updateRole();
+                    updaterole();
                     break;
 
                 case 'Update Employee Manager':
@@ -93,8 +93,8 @@ const initialPrompt = () => {
                     deleteEmployee();
                     break;
 
-                case 'Delete Role':
-                    deleteRole();
+                case 'Delete roles':
+                    deleterole();
                     break;
                                 
                 case 'Delete Department':
@@ -117,18 +117,20 @@ const initialPrompt = () => {
 const viewAllEmployees = () => {
     console.log("Viewing All Employees...\n");
 
-    let query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name";
+    let query = "SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.names,";
 
-    query += "role.salary, concat(manager.first_name, ' ', manager.last_name) as manager FROM (((role INNER JOIN department ON department.id =";
+    query += "roles.salary, concat(manager.first_name, ' ', manager.last_name) as manager FROM (((roles INNER JOIN department ON department.id =";
 
-    query += "role.department_id) INNER JOIN employee ON employee.role_id = role.id) LEFT JOIN employee manager on manager.id = employee.manager_id);";
+    query += "roles.department_id) INNER JOIN employee ON employee.role_id = roles.id) LEFT JOIN employee manager on manager.id = employee.manager_id);";
 
     connection.query(query, (err, res) => {
         if (err) throw err;
         const table = conTable.getTable(res);
         console.log(table);
         initialPrompt();
-    })
-}
+    });
+};
+
+
 
 

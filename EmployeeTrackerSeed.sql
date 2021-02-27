@@ -6,11 +6,11 @@ USE employeeDB;
 
 CREATE TABLE department (
     id INTEGER NOT NULL AUTO_INCREMENT,
-    name VARCHAR(30),
+    names VARCHAR(30),
     PRIMARY KEY (id)
 );
 
-CREATE TABLE role (
+CREATE TABLE roles (
     id INTEGER NOT NULL AUTO_INCREMENT,
     title VARCHAR(35) NOT NULL,
     salary DECIMAL NOT NULL,
@@ -28,15 +28,15 @@ CREATE TABLE employee (
 );
 
 SELECT * FROM employeeDB.department;
-INSERT INTO department (name)
+INSERT INTO department (names)
 VALUES ("Marketing"),
 ("Human Resources"),
 ("Customer Service"),
 ("Public Relations"),
 ("Content Creation");
 
-SELECT * FROM employeeDB.role;
-INSERT INTO role (title, salary, department_id)
+SELECT * FROM employeeDB.roles;
+INSERT INTO roles (title, salary, department_id)
 VALUES ("Sr. Marketing Specialist", 75000, 1),
 ("Jr. Marketing Specialist", 65000, 1),
 ("Marketing Assistant", 50000, 1),
