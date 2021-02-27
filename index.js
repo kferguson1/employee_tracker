@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const conTable = require('console.table');
+const { type } = require('os');
 
 // Arrays
 let depts = ['Marketing', 'Human Resources', 'Customer Service', 'Public Relations', 'Content Creation'];
@@ -43,11 +44,9 @@ const initialPrompt = () => {
                     'Add New Role',
                     'Add New Department',
                     'Update Employee Role',
-                    'Update Employee Manager',
                     'Delete Employee',
                     'Delete Role',
                     'Delete Department',
-                    'View Employees by Manager',
                     'Exit',
                 ],
                 message: 'What would you like to do?'
@@ -84,25 +83,17 @@ const initialPrompt = () => {
                 case 'Update Employee Role':
                     updateRole();
                     break;
-
-                case 'Update Employee Manager':
-                    updateManager();
-                    break;
                             
                 case 'Delete Employee':
                     deleteEmployee();
                     break;
 
-                case 'Delete Roles':
+                case 'Delete Role':
                     deleteRole();
                     break;
                                 
                 case 'Delete Department':
                     deleteDepartment();
-                    break;
-
-                case 'View Employees by Manager':
-                    viewEmployeeByManager();
                     break;
 
                 case 'Exit':
@@ -136,28 +127,22 @@ const viewAllEmployees = () => {
 };
 
 const viewByRole = () => {
+ pos = [];
     console.log("View Employees by Role...\n");
-   pos = [];
    connection.query("SELECT roles.title FROM roles", (err, res) => {
        if (err) throw err;
-       for (let i = 0; i < res.length; i++) {
+       for (let i = 0; i < pos.length; i++) {
            pos.push(res[i].title);
-
-    // query += "roles.salary, concat(manager.first_name, ' ', manager.last_name) as manager FROM (((roles INNER JOIN department ON department.id =";
-
-    // query += "roles.department_id) INNER JOIN employee ON employee.role_id = roles.id) LEFT JOIN employee manager on manager.id = employee.manager_id);";
-        // const table = conTable.getTable(res);
-        // console.log(table);
-        // initialPrompt();
        }
    })
 };
 
 const viewByDept = () => {
-    depts = [];
-    connection.query("SELECT names FROM department", (err, res) => {
+ depts = [];
+    console.log("View Employees by Department...\n");
+    connection.query("SELECT department.names FROM department", (err, res) => {
         if (err) throw err;
-        for (let i = 0; i < res.length; i++) {
+        for (let i = 0; i < depts.length; i++) {
             depts.push(res[i].name);
         }
     });
@@ -353,7 +338,6 @@ const addDepartment = () => {
           (err, res) => {
             if (err) throw err;
             console.log(`${res.affectedRows} Employee updated!\n`);
-            // Call deleteProduct AFTER the UPDATE completes
             initialPrompt();
           }
         );
@@ -388,17 +372,17 @@ const addDepartment = () => {
     inquirer
       .prompt([
         {
-          name: "job",
+          name: "position",
           type: "list",
           message: "Which Role would you like to delete?",
           choices: pos,
         },
       ])
-      .then(({ job }) => {
+      .then(({ position }) => {
         connection.query(
           "DELETE FROM roles WHERE ?",
           {
-            title: job,
+            title: position,
           },
           (err, res) => {
             if (err) throw err;
